@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Traffic AI &mdash; Monitoring Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚦</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">Traffic<strong>AI</strong></span>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" data-page="dashboard">
+        <svg viewBox="0 0 24 24"><path d="M3 13h4v8H3zm7-8h4v16h-4zm7 4h4v12h-4z"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-page="monitor">
+        <svg viewBox="0 0 24 24"><path d="M3 5h18v12H3zM8 21h8M12 17v4"/></svg>
+        Live Monitor
+      </button>
+      <button class="nav-item" data-page="analytics">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16M7 15l3-4 3 2 4-6"/></svg>
+        Analytics
+      </button>
+      <button class="nav-item" data-page="history">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6"/></svg>
+        History
+      </button>
+      <button class="nav-item" data-page="settings">
+        <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"/></svg>
+        Settings
+      </button>
+    </nav>
+    <div class="backend-status" id="backendStatus">
+      <span class="dot"></span>
+      <span class="txt">Checking backend&hellip;</span>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ============ DASHBOARD ============ -->
+    <section class="page active" id="page-dashboard">
+      <header class="page-head">
+        <div>
+          <h1>AI Traffic Monitoring</h1>
+          <p class="subtitle">Real-time computer vision for intelligent traffic analysis</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn ghost" id="dashUploadBtn">Upload Video</button>
+        </div>
+      </header>
+
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card" data-key="total">
+          <div class="stat-icon icon-cyan">▣</div>
+          <div class="stat-num" data-count="total">0</div>
+          <div class="stat-label">Total Vehicles</div>
+        </div>
+        <div class="stat-card" data-key="car">
+          <div class="stat-icon icon-violet">🚗</div>
+          <div class="stat-num" data-count="car">0</div>
+          <div class="stat-label">Cars</div>
+        </div>
+        <div class="stat-card" data-key="bus">
+          <div class="stat-icon icon-amber">🚌</div>
+          <div class="stat-num" data-count="bus">0</div>
+          <div class="stat-label">Buses</div>
+        </div>
+        <div class="stat-card" data-key="truck">
+          <div class="stat-icon icon-green">🚚</div>
+          <div class="stat-num" data-count="truck">0</div>
+          <div class="stat-label">Trucks</div>
+        </div>
+        <div class="stat-card" data-key="motorcycle">
+          <div class="stat-icon icon-red">🏍</div>
+          <div class="stat-num" data-count="motorcycle">0</div>
+          <div class="stat-label">Motorcycles</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Traffic Density</h3>
+            <span class="tag" id="densityWindowTag">last 30s</span>
+          </div>
+          <div class="density-display">
+            <div class="density-ring" id="densityRing">
+              <span id="densityLevel">LOW</span>
+            </div>
+            <p class="density-sub" id="densitySub">0 vehicles crossed in the last window</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Vehicle Distribution</h3>
+          </div>
+          <canvas id="distributionChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Count Over Time</h3>
+          <span class="tag" id="fpsTag">FPS: 0.0</span>
+        </div>
+        <canvas id="timeChart" height="110"></canvas>
+      </div>
+    </section>
+
+    <!-- ============ LIVE MONITOR ============ -->
+    <section class="page" id="page-monitor">
+      <header class="page-head">
+        <div>
+          <h1>Live Monitor</h1>
+          <p class="subtitle">Detection, tracking and line-crossing counts as the video is processed</p>
+        </div>
+      </header>
+
+      <div class="monitor-grid">
+        <div class="monitor-left">
+        <div class="video-panel" style="margin-bottom:18px">
+          <div class="video-overlay-top">
+            <span class="live-dot" id="liveDot"></span>
+            <span id="liveLabel">IDLE</span>
+            <span class="sep">|</span>
+            <span id="monFps">FPS: 0.0</span>
+            <span class="sep">|</span>
+            <span id="monCam">CAM: &mdash;</span>
+            <span class="sep">|</span>
+            <span id="monDetection">DETECTION: INACTIVE</span>
+          </div>
+          <div class="video-stage" id="videoStage">
+            <img id="liveFeed" alt="Live annotated feed" />
+            <div class="video-placeholder" id="videoPlaceholder">
+              <p>No active feed.</p>
+              <p class="muted">Upload a video and click Start Analysis to begin.</p>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Count Over Time</h3><span class="tag">live</span></div>
+          <canvas id="liveTimeChart" height="110"></canvas>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Class Breakdown</h3><span class="tag">crossed the line</span></div>
+          <canvas id="liveBarChart" height="130"></canvas>
+        </div>
+        </div>
+
+        <div class="side-panel">
+          <div class="panel">
+            <h3>Upload &amp; Controls</h3>
+            <div class="dropzone" id="dropzone">
+              <div class="dropzone-icon">&#8593;</div>
+              <p>Drag &amp; drop your video here</p>
+              <p class="muted">MP4 &bull; AVI &bull; MOV &bull; MKV</p>
+              <button class="btn primary" id="browseBtn">Browse Files</button>
+              <input type="file" id="fileInput" accept=".mp4,.avi,.mov,.mkv" hidden />
+            </div>
+            <div class="file-meta" id="fileMeta" hidden>
+              <div><span class="k">File</span><span class="v" id="metaName">&mdash;</span></div>
+              <div><span class="k">Duration</span><span class="v" id="metaDuration">&mdash;</span></div>
+              <div><span class="k">Resolution</span><span class="v" id="metaRes">&mdash;</span></div>
+              <div><span class="k">Status</span><span class="v" id="metaStatus">Ready</span></div>
+            </div>
+            <div class="controls-row">
+              <button class="btn primary full" id="startBtn" disabled>Start Analysis</button>
+            </div>
+            <div class="controls-row">
+              <button class="btn ghost" id="pauseBtn" disabled>Pause</button>
+              <button class="btn ghost" id="resumeBtn" disabled>Resume</button>
+              <button class="btn danger" id="stopBtn" disabled>Stop</button>
+            </div>
+            <div class="controls-row">
+              <button class="btn ghost full" id="resetBtn">Reset Count</button>
+            </div>
+            <p class="error-msg" id="errorMsg" hidden></p>
+          </div>
+
+          <div class="panel">
+            <h3>Live Counts</h3>
+            <ul class="count-list" id="liveCountList">
+              <li><span>Total</span><strong data-live="total">0</strong></li>
+              <li><span>Car</span><strong data-live="car">0</strong></li>
+              <li><span>Bus</span><strong data-live="bus">0</strong></li>
+              <li><span>Truck</span><strong data-live="truck">0</strong></li>
+              <li><span>Motorcycle</span><strong data-live="motorcycle">0</strong></li>
+              <li><span>Bicycle</span><strong data-live="bicycle">0</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ANALYTICS ============ -->
+    <section class="page" id="page-analytics">
+      <header class="page-head">
+        <div>
+          <h1>Analytics</h1>
+          <p class="subtitle">Deeper insight into the most recent monitoring run</p>
+        </div>
+      </header>
+
+      <div class="stat-grid four">
+        <div class="stat-card"><div class="stat-num" id="anTotal">0</div><div class="stat-label">Total Vehicles</div></div>
+        <div class="stat-card"><div class="stat-num" id="anRate">0</div><div class="stat-label">Avg / Minute</div></div>
+        <div class="stat-card"><div class="stat-num" id="anPeak">&mdash;</div><div class="stat-label">Peak Period</div></div>
+        <div class="stat-card"><div class="stat-num" id="anFps">0</div><div class="stat-label">Processing FPS</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h3>Vehicle Distribution</h3></div>
+          <canvas id="anDistributionChart" height="220"></canvas>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Density Over Recent Sessions</h3></div>
+          <canvas id="anDensityChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Count Over Time</h3></div>
+        <canvas id="anTimeChart" height="110"></canvas>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY ============ -->
+    <section class="page" id="page-history">
+      <header class="page-head">
+        <div>
+          <h1>History</h1>
+          <p class="subtitle">Every completed monitoring session, saved automatically</p>
+        </div>
+      </header>
+      <div class="panel">
+        <div class="table-wrap">
+          <table class="data-table" id="historyTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Video</th><th>Total</th><th>Car</th><th>Bus</th>
+                <th>Truck</th><th>Moto</th><th>Bicycle</th><th>Density</th><th>FPS</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+          <p class="muted" id="historyEmpty">No sessions yet &mdash; process a video to see it here.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY DETAIL (modal-like page) ============ -->
+    <section class="page" id="page-history-detail">
+      <header class="page-head">
+        <div>
+          <button class="btn ghost" id="backToHistory">&larr; Back to History</button>
+          <h1 id="detailTitle">Session Detail</h1>
+        </div>
+      </header>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h3>Summary</h3></div>
+          <ul class="count-list" id="detailSummary"></ul>
+        </div>
+        <div class="panel">
+          <video id="detailVideo" controls></video>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Count Over Time</h3></div>
+        <canvas id="detailChart" height="110"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Manual Testing Notes</h3></div>
+        <p class="muted">After reviewing the footage manually, record what the model missed or double-counted &mdash; this is the performance data the project report asks for.</p>
+        <div class="settings-row">
+          <label>Missed detections<input type="number" id="detailMissed" min="0" /></label>
+          <label>Duplicate detections<input type="number" id="detailDup" min="0" /></label>
+        </div>
+        <label class="block">Notes<textarea id="detailNotes" rows="3"></textarea></label>
+        <button class="btn primary" id="saveDetailBtn">Save Notes</button>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section class="page" id="page-settings">
+      <header class="page-head">
+        <div>
+          <h1>Settings</h1>
+          <p class="subtitle">Tune detection, counting and density behavior</p>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Counting Line</h3></div>
+        <label class="block">
+          Position (fraction of frame height): <span id="lineValLabel">0.60</span>
+          <input type="range" id="lineSlider" min="0.1" max="0.9" step="0.05" />
+        </label>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Detection</h3></div>
+        <div class="settings-row">
+          <label>Confidence threshold
+            <input type="number" id="confInput" min="0.05" max="0.95" step="0.05" />
+          </label>
+          <label>Model
+            <select id="modelSelect"></select>
+          </label>
+        </div>
+        <div class="block">
+          <span>Vehicle classes</span>
+          <div class="chip-row" id="classChips"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Traffic Density Thresholds</h3></div>
+        <div class="settings-row">
+          <label>Rolling window (seconds)<input type="number" id="windowInput" min="5" max="300" /></label>
+          <label>LOW max<input type="number" id="lowMaxInput" min="0" /></label>
+          <label>MEDIUM max<input type="number" id="medMaxInput" min="0" /></label>
+        </div>
+        <p class="muted">Vehicles that crossed the counting line within the rolling window are compared to these thresholds. Above MEDIUM max is classified HIGH.</p>
+      </div>
+
+      <button class="btn primary" id="saveSettingsBtn">Save Settings</button>
+      <span class="save-confirm" id="saveConfirm" hidden>Saved</span>
+    </section>
+
+  </main>
+</div>
+
+<script src="assets/chart.umd.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

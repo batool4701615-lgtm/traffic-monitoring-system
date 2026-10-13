@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Project runtime data (don't commit large/binary/generated files)
+videos/*
+!videos/.gitkeep
+outputs/*
+!outputs/.gitkeep
+data/*.db
+data/settings.json
+data/video_registry.json
+models/*.pt
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Node (only relevant if you swap the frontend for a React build later)
+node_modules/
+dist/

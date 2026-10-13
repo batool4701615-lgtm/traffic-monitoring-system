@@ -1,0 +1,12 @@
+   .venv
+   venv
+   __pycache__
+   *.pyc
+   .git
+   runs
+   *.pt
+   videos/*
+   outputs/*
+   data/*.db
+   data/settings.json
+   data/video_registry.json

@@ -1,3 +1,9 @@
+   ---
+   title: AI Traffic Monitoring
+   sdk: docker
+   app_port: 7860
+   ---
+
 # AI-Based Traffic Monitoring System
 
 A full-stack computer vision application that detects, tracks and counts

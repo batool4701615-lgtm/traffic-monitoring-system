@@ -15,7 +15,7 @@
    COPY . .
 
    # Download the YOLO weights into the folder the app reads from
-   RUN python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')" && mv yolov8n.pt backend/models/
+   RUN mkdir -p backend/models && python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')" && mv yolov8n.pt backend/models/
 
    # Folders the app writes to at runtime
    RUN mkdir -p videos outputs data && chmod -R 777 videos outputs data

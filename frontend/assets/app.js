@@ -204,7 +204,7 @@ async function pollOnce() {
       document.getElementById("liveDot").classList.remove("active");
       document.getElementById("monDetection").textContent = "DETECTION: INACTIVE";
       if (status.status === "error") setError(status.error_message || "Processing failed.");
-      document.getElementById("startBtn").disabled = true; // must upload a new video or reset
+      document.getElementById("startBtn").disabled = !currentVideoId;
     } else if (status.status === "paused") {
       setControlsState("paused");
     } else if (status.status === "processing") {

@@ -1,11 +1,6 @@
 """
-Entry point for the AI Traffic Monitoring backend.
-
 Run with:
     uvicorn backend.main:app --reload --port 8000
-
-(run this command from the project root, so the `backend` package
-resolves correctly)
 """
 
 import os
@@ -41,8 +36,6 @@ def on_startup():
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception):
-    # Never leak a raw Python traceback to the frontend -- always return
-    # a friendly, structured error message instead.
     return JSONResponse(
         status_code=500,
         content={"detail": f"Something went wrong on the server: {exc}"},

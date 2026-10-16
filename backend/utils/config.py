@@ -71,7 +71,7 @@ MAX_UPLOAD_BYTES = 500 * 1024 * 1024  # 500 MB
 # model_name: filename of the .pt weights file inside backend/models/.
 # enabled_classes: subset of VEHICLE_CLASS_KEYS actually being detected.
 DEFAULT_SETTINGS = {   
-    "imgsz": 640,
+    "imgsz": 1280,
     "counting_line_position": 0.6,
     "confidence_threshold": 0.35,
     "density_window_seconds": 30,
